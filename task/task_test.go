@@ -88,11 +88,7 @@ func (s *taskSuite) Test_NewClient_1() {
 
 // Test_NewClient_1 should create client through proxy
 func (s *taskSuite) Test_NewClient_2() {
-	pwdChan := make(chan string, 2)
 	s.mockSSHServer.PasswordHandler = func(ctx sshServer.Context, pwd string) bool {
-		go func() {
-			pwdChan <- pwd
-		}()
 		return true
 	}
 	s.mockSSHServer.ChannelHandlers = map[string]sshServer.ChannelHandler{
@@ -122,8 +118,6 @@ func (s *taskSuite) Test_NewClient_2() {
 	client, err := NewClient(info)
 	s.Nil(err)
 	s.NotNil(client)
-	s.Equal(info.Proxy.Password, <-pwdChan)
-	s.Equal(info.Password, <-pwdChan)
 }
 
 // Test_Close should call sshClient.close
